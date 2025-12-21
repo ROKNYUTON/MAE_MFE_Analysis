@@ -1,0 +1,9 @@
+# File generati da Python
+__pycache__/
+*.pyc
+.env
+venv/
+
+# Cartelle con i tuoi dati
+data/datasets/
+data/reports/
