@@ -1,0 +1,30 @@
+ANALISI STRATEGIA: usdjpy cf
+============================================================
+
+Trade totali: 738
+Trade vincenti: 353 (47.8%)
+Profitto totale: €39,087.20
+Profitto medio: €52.96
+MAE medio: €153.16
+MFE medio: €276.94
+Utilizzo medio MFE: -181.8%
+Evitamento medio MAE: -421.6%
+
+RECOMMENDATIONS:
+------------------------------------------------------------
+⚠️ BASSO UTILIZZO MFE: La strategia cattura meno del 30% del potenziale profitto.
+   Raccomandazione: Considera trailing stop più larghi o take profit più alti.
+
+ANALISI PER TIPO DI TRADE:
+------------------------------------------------------------
+Sell:
+  - Trade: 350
+  - Win Rate: 60.0%
+  - Profitto medio: €15.44
+
+Buy:
+  - Trade: 388
+  - Win Rate: 36.9%
+  - Profitto medio: €86.81
+  ⚠️  Win Rate basso per Buy. Considera se i segnali sono affidabili.
+

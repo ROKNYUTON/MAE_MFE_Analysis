@@ -1,0 +1,29 @@
+ANALISI STRATEGIA: gold fv
+============================================================
+
+Trade totali: 701
+Trade vincenti: 356 (50.8%)
+Profitto totale: €27,962.64
+Profitto medio: €39.89
+MAE medio: €118.40
+MFE medio: €188.96
+Utilizzo medio MFE: -52.5%
+Evitamento medio MAE: -166.5%
+
+RECOMMENDATIONS:
+------------------------------------------------------------
+⚠️ BASSO UTILIZZO MFE: La strategia cattura meno del 30% del potenziale profitto.
+   Raccomandazione: Considera trailing stop più larghi o take profit più alti.
+
+ANALISI PER TIPO DI TRADE:
+------------------------------------------------------------
+Buy:
+  - Trade: 424
+  - Win Rate: 55.2%
+  - Profitto medio: €60.68
+
+Sell:
+  - Trade: 277
+  - Win Rate: 44.0%
+  - Profitto medio: €8.06
+

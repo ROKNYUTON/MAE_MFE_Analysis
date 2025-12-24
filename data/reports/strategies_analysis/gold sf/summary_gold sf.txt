@@ -1,0 +1,24 @@
+ANALISI STRATEGIA: gold sf
+============================================================
+
+Trade totali: 521
+Trade vincenti: 237 (45.5%)
+Profitto totale: €15,797.13
+Profitto medio: €30.32
+MAE medio: €89.14
+MFE medio: €190.45
+Utilizzo medio MFE: -377.3%
+Evitamento medio MAE: -180.9%
+
+RECOMMENDATIONS:
+------------------------------------------------------------
+⚠️ BASSO UTILIZZO MFE: La strategia cattura meno del 30% del potenziale profitto.
+   Raccomandazione: Considera trailing stop più larghi o take profit più alti.
+
+ANALISI PER TIPO DI TRADE:
+------------------------------------------------------------
+Buy:
+  - Trade: 521
+  - Win Rate: 45.5%
+  - Profitto medio: €30.32
+

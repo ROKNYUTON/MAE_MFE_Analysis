@@ -1,0 +1,25 @@
+ANALISI STRATEGIA: nas100 sf
+============================================================
+
+Trade totali: 729
+Trade vincenti: 289 (39.6%)
+Profitto totale: €19,794.70
+Profitto medio: €27.15
+MAE medio: €96.62
+MFE medio: €186.64
+Utilizzo medio MFE: -120.4%
+Evitamento medio MAE: -184.2%
+
+RECOMMENDATIONS:
+------------------------------------------------------------
+⚠️ BASSO UTILIZZO MFE: La strategia cattura meno del 30% del potenziale profitto.
+   Raccomandazione: Considera trailing stop più larghi o take profit più alti.
+
+ANALISI PER TIPO DI TRADE:
+------------------------------------------------------------
+Buy:
+  - Trade: 729
+  - Win Rate: 39.6%
+  - Profitto medio: €27.15
+  ⚠️  Win Rate basso per Buy. Considera se i segnali sono affidabili.
+

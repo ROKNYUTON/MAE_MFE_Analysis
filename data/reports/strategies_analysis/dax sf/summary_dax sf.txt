@@ -1,0 +1,25 @@
+ANALISI STRATEGIA: dax sf
+============================================================
+
+Trade totali: 372
+Trade vincenti: 129 (34.7%)
+Profitto totale: €19,697.90
+Profitto medio: €52.95
+MAE medio: €99.54
+MFE medio: €240.24
+Utilizzo medio MFE: -1.9%
+Evitamento medio MAE: -210.6%
+
+RECOMMENDATIONS:
+------------------------------------------------------------
+⚠️ BASSO UTILIZZO MFE: La strategia cattura meno del 30% del potenziale profitto.
+   Raccomandazione: Considera trailing stop più larghi o take profit più alti.
+
+ANALISI PER TIPO DI TRADE:
+------------------------------------------------------------
+Buy:
+  - Trade: 372
+  - Win Rate: 34.7%
+  - Profitto medio: €52.95
+  ⚠️  Win Rate basso per Buy. Considera se i segnali sono affidabili.
+

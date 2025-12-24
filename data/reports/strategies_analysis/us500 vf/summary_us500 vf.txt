@@ -1,0 +1,29 @@
+ANALISI STRATEGIA: us500 vf
+============================================================
+
+Trade totali: 703
+Trade vincenti: 369 (52.5%)
+Profitto totale: €18,622.50
+Profitto medio: €26.49
+MAE medio: €87.15
+MFE medio: €138.57
+Utilizzo medio MFE: -51.6%
+Evitamento medio MAE: -190.3%
+
+RECOMMENDATIONS:
+------------------------------------------------------------
+⚠️ BASSO UTILIZZO MFE: La strategia cattura meno del 30% del potenziale profitto.
+   Raccomandazione: Considera trailing stop più larghi o take profit più alti.
+
+ANALISI PER TIPO DI TRADE:
+------------------------------------------------------------
+Buy:
+  - Trade: 462
+  - Win Rate: 54.8%
+  - Profitto medio: €26.11
+
+Sell:
+  - Trade: 241
+  - Win Rate: 48.1%
+  - Profitto medio: €27.22
+
