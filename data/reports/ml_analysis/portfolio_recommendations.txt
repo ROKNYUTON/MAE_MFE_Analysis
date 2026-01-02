@@ -1,0 +1,10 @@
+=== Portfolio Recommendations ===
+- Statistiche per label salvate in feature_means_by_label.csv e feature_std_by_label.csv
+- Top features generiche: eq_max, eq_min, eq_window_maxdd, US100.pro_maxdd, US500.pro_maxdd, GOLD.pro_maxdd, eq_kurt, eq_skew, US500.pro_corr_with_eq, US100.pro_corr_with_eq, US100.pro_ret, US100.pro_vol
+- Max drawdown osservato (close): -4391.85 a 2023-03-03 08:46:03
+- Regola IF per cluster 0 (DD >= 2000, 17 istanze): IF eq_mean_ret < 0 (-0.00%) AND US500.pro_ret < 0 (-1.12%) AND US100.pro_ret < 0 (-1.19%) THEN high drawdown risk - reduce exposure
+- Regola IF per cluster 1 (DD >= 2000, 1 istanze): IF eq_mean_ret < 0 (-0.00%) AND US500.pro_ret < 0 (-16.41%) AND US100.pro_ret < 0 (-11.20%) AND GOLD.pro_ret < 0 (-4.71%) THEN high drawdown risk - reduce exposure
+- Regola IF per cluster 2 (DD >= 2000, 1 istanze): IF eq_mean_ret < 0 (-0.00%) AND US500.pro_ret < 0 (-1.68%) AND GOLD.pro_ret < 0 (-2.78%) THEN high drawdown risk - reduce exposure
+- Regola IF per cluster 0 (DD >= 1000, 32 istanze): IF eq_mean_ret < 0 (-0.00%) AND US500.pro_ret < 0 (-0.11%) AND US100.pro_ret < 0 (-0.10%) THEN high drawdown risk - reduce exposure
+- Regola IF per cluster 1 (DD >= 1000, 56 istanze): IF eq_mean_ret < 0 (-0.00%) AND US500.pro_ret < 0 (-0.75%) AND US100.pro_ret < 0 (-0.99%) THEN high drawdown risk - reduce exposure
+- Regola IF per cluster 2 (DD >= 1000, 1 istanze): IF eq_mean_ret < 0 (-0.00%) AND US500.pro_ret < 0 (-16.41%) AND US100.pro_ret < 0 (-11.20%) AND GOLD.pro_ret < 0 (-4.71%) THEN high drawdown risk - reduce exposure

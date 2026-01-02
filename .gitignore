@@ -1,6 +1,8 @@
 # File generati da Python
 __pycache__/
 *.pyc
+*.csv
+
 .env
 venv/
 venv312/
