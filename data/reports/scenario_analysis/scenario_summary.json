@@ -1,0 +1,326 @@
+[
+  {
+    "scenario": "ORIGINAL",
+    "final_equity": 252039.4599999996,
+    "total_pnl_eur": 152039.4599999996,
+    "max_dd_eur": -3232.66,
+    "max_dd_time": 1686779950000,
+    "trades": 5907,
+    "delta_vs_original_eur": 0.0
+  },
+  {
+    "scenario": "VIX_GE_25",
+    "final_equity": 252039.4599999996,
+    "total_pnl_eur": 152039.4599999996,
+    "max_dd_eur": -3232.66,
+    "max_dd_time": 1686779950000,
+    "trades": 5907,
+    "delta_vs_original_eur": 0.0
+  },
+  {
+    "scenario": "VIX_GE_20",
+    "final_equity": 252039.4599999996,
+    "total_pnl_eur": 152039.4599999996,
+    "max_dd_eur": -3232.66,
+    "max_dd_time": 1686779950000,
+    "trades": 5907,
+    "delta_vs_original_eur": 0.0
+  },
+  {
+    "scenario": "VIX_GE_30",
+    "final_equity": 252039.4599999996,
+    "total_pnl_eur": 152039.4599999996,
+    "max_dd_eur": -3232.66,
+    "max_dd_time": 1686779950000,
+    "trades": 5907,
+    "delta_vs_original_eur": 0.0
+  },
+  {
+    "scenario": "NO_FOMC_60_AND_VIX_GE_25",
+    "final_equity": 237743.9599999998,
+    "total_pnl_eur": 137743.9599999998,
+    "max_dd_eur": -3356.5399999999,
+    "max_dd_time": 1677837550000,
+    "trades": 5778,
+    "delta_vs_original_eur": -14295.4999999998
+  },
+  {
+    "scenario": "NO_FOMC_60",
+    "final_equity": 237743.9599999998,
+    "total_pnl_eur": 137743.9599999998,
+    "max_dd_eur": -3356.5399999999,
+    "max_dd_time": 1677837550000,
+    "trades": 5778,
+    "delta_vs_original_eur": -14295.4999999998
+  },
+  {
+    "scenario": "NO_FOMC_60_AND_VIX_GE_30",
+    "final_equity": 237743.9599999998,
+    "total_pnl_eur": 137743.9599999998,
+    "max_dd_eur": -3356.5399999999,
+    "max_dd_time": 1677837550000,
+    "trades": 5778,
+    "delta_vs_original_eur": -14295.4999999998
+  },
+  {
+    "scenario": "NO_FOMC_60_AND_VIX_GE_20",
+    "final_equity": 237743.9599999998,
+    "total_pnl_eur": 137743.9599999998,
+    "max_dd_eur": -3356.5399999999,
+    "max_dd_time": 1677837550000,
+    "trades": 5778,
+    "delta_vs_original_eur": -14295.4999999998
+  },
+  {
+    "scenario": "NO_FOMC_15",
+    "final_equity": 237666.6699999998,
+    "total_pnl_eur": 137666.6699999998,
+    "max_dd_eur": -3356.5399999999,
+    "max_dd_time": 1677837550000,
+    "trades": 5788,
+    "delta_vs_original_eur": -14372.7899999998
+  },
+  {
+    "scenario": "NO_FOMC_15_AND_VIX_GE_20",
+    "final_equity": 237666.6699999998,
+    "total_pnl_eur": 137666.6699999998,
+    "max_dd_eur": -3356.5399999999,
+    "max_dd_time": 1677837550000,
+    "trades": 5788,
+    "delta_vs_original_eur": -14372.7899999998
+  },
+  {
+    "scenario": "NO_FOMC_15_AND_VIX_GE_25",
+    "final_equity": 237666.6699999998,
+    "total_pnl_eur": 137666.6699999998,
+    "max_dd_eur": -3356.5399999999,
+    "max_dd_time": 1677837550000,
+    "trades": 5788,
+    "delta_vs_original_eur": -14372.7899999998
+  },
+  {
+    "scenario": "NO_FOMC_15_AND_VIX_GE_30",
+    "final_equity": 237666.6699999998,
+    "total_pnl_eur": 137666.6699999998,
+    "max_dd_eur": -3356.5399999999,
+    "max_dd_time": 1677837550000,
+    "trades": 5788,
+    "delta_vs_original_eur": -14372.7899999998
+  },
+  {
+    "scenario": "NO_NFP_60",
+    "final_equity": 237231.13,
+    "total_pnl_eur": 137231.13,
+    "max_dd_eur": -3258.18,
+    "max_dd_time": 1686779950000,
+    "trades": 5698,
+    "delta_vs_original_eur": -14808.3299999996
+  },
+  {
+    "scenario": "NO_NFP_60_AND_VIX_GE_30",
+    "final_equity": 237231.13,
+    "total_pnl_eur": 137231.13,
+    "max_dd_eur": -3258.18,
+    "max_dd_time": 1686779950000,
+    "trades": 5698,
+    "delta_vs_original_eur": -14808.3299999996
+  },
+  {
+    "scenario": "NO_NFP_60_AND_VIX_GE_25",
+    "final_equity": 237231.13,
+    "total_pnl_eur": 137231.13,
+    "max_dd_eur": -3258.18,
+    "max_dd_time": 1686779950000,
+    "trades": 5698,
+    "delta_vs_original_eur": -14808.3299999996
+  },
+  {
+    "scenario": "NO_NFP_60_AND_VIX_GE_20",
+    "final_equity": 237231.13,
+    "total_pnl_eur": 137231.13,
+    "max_dd_eur": -3258.18,
+    "max_dd_time": 1686779950000,
+    "trades": 5698,
+    "delta_vs_original_eur": -14808.3299999996
+  },
+  {
+    "scenario": "NO_CPI_15_AND_VIX_GE_25",
+    "final_equity": 237127.9799999997,
+    "total_pnl_eur": 137127.9799999997,
+    "max_dd_eur": -3459.74,
+    "max_dd_time": 1677837550000,
+    "trades": 5735,
+    "delta_vs_original_eur": -14911.4799999999
+  },
+  {
+    "scenario": "NO_CPI_15_AND_VIX_GE_20",
+    "final_equity": 237127.9799999997,
+    "total_pnl_eur": 137127.9799999997,
+    "max_dd_eur": -3459.74,
+    "max_dd_time": 1677837550000,
+    "trades": 5735,
+    "delta_vs_original_eur": -14911.4799999999
+  },
+  {
+    "scenario": "NO_CPI_15_AND_VIX_GE_30",
+    "final_equity": 237127.9799999997,
+    "total_pnl_eur": 137127.9799999997,
+    "max_dd_eur": -3459.74,
+    "max_dd_time": 1677837550000,
+    "trades": 5735,
+    "delta_vs_original_eur": -14911.4799999999
+  },
+  {
+    "scenario": "NO_CPI_15",
+    "final_equity": 237127.9799999997,
+    "total_pnl_eur": 137127.9799999997,
+    "max_dd_eur": -3459.74,
+    "max_dd_time": 1677837550000,
+    "trades": 5735,
+    "delta_vs_original_eur": -14911.4799999999
+  },
+  {
+    "scenario": "NO_NFP_15",
+    "final_equity": 237094.6899999999,
+    "total_pnl_eur": 137094.6899999999,
+    "max_dd_eur": -3258.18,
+    "max_dd_time": 1686779950000,
+    "trades": 5713,
+    "delta_vs_original_eur": -14944.7699999997
+  },
+  {
+    "scenario": "NO_NFP_15_AND_VIX_GE_25",
+    "final_equity": 237094.6899999999,
+    "total_pnl_eur": 137094.6899999999,
+    "max_dd_eur": -3258.18,
+    "max_dd_time": 1686779950000,
+    "trades": 5713,
+    "delta_vs_original_eur": -14944.7699999997
+  },
+  {
+    "scenario": "NO_NFP_15_AND_VIX_GE_30",
+    "final_equity": 237094.6899999999,
+    "total_pnl_eur": 137094.6899999999,
+    "max_dd_eur": -3258.18,
+    "max_dd_time": 1686779950000,
+    "trades": 5713,
+    "delta_vs_original_eur": -14944.7699999997
+  },
+  {
+    "scenario": "NO_NFP_15_AND_VIX_GE_20",
+    "final_equity": 237094.6899999999,
+    "total_pnl_eur": 137094.6899999999,
+    "max_dd_eur": -3258.18,
+    "max_dd_time": 1686779950000,
+    "trades": 5713,
+    "delta_vs_original_eur": -14944.7699999997
+  },
+  {
+    "scenario": "NO_CPI_60_AND_VIX_GE_30",
+    "final_equity": 236219.7899999997,
+    "total_pnl_eur": 136219.7899999997,
+    "max_dd_eur": -3459.74,
+    "max_dd_time": 1677837550000,
+    "trades": 5724,
+    "delta_vs_original_eur": -15819.6699999999
+  },
+  {
+    "scenario": "NO_CPI_60_AND_VIX_GE_25",
+    "final_equity": 236219.7899999997,
+    "total_pnl_eur": 136219.7899999997,
+    "max_dd_eur": -3459.74,
+    "max_dd_time": 1677837550000,
+    "trades": 5724,
+    "delta_vs_original_eur": -15819.6699999999
+  },
+  {
+    "scenario": "NO_CPI_60_AND_VIX_GE_20",
+    "final_equity": 236219.7899999997,
+    "total_pnl_eur": 136219.7899999997,
+    "max_dd_eur": -3459.74,
+    "max_dd_time": 1677837550000,
+    "trades": 5724,
+    "delta_vs_original_eur": -15819.6699999999
+  },
+  {
+    "scenario": "NO_CPI_60",
+    "final_equity": 236219.7899999997,
+    "total_pnl_eur": 136219.7899999997,
+    "max_dd_eur": -3459.74,
+    "max_dd_time": 1677837550000,
+    "trades": 5724,
+    "delta_vs_original_eur": -15819.6699999999
+  },
+  {
+    "scenario": "NO_ALLNEWS_15_AND_VIX_GE_25",
+    "final_equity": 212307.9500000001,
+    "total_pnl_eur": 112307.9500000001,
+    "max_dd_eur": -3232.5899999999,
+    "max_dd_time": 1677837550000,
+    "trades": 5437,
+    "delta_vs_original_eur": -39731.5099999995
+  },
+  {
+    "scenario": "NO_ALLNEWS_15_AND_VIX_GE_20",
+    "final_equity": 212307.9500000001,
+    "total_pnl_eur": 112307.9500000001,
+    "max_dd_eur": -3232.5899999999,
+    "max_dd_time": 1677837550000,
+    "trades": 5437,
+    "delta_vs_original_eur": -39731.5099999995
+  },
+  {
+    "scenario": "NO_ALLNEWS_15",
+    "final_equity": 212307.9500000001,
+    "total_pnl_eur": 112307.9500000001,
+    "max_dd_eur": -3232.5899999999,
+    "max_dd_time": 1677837550000,
+    "trades": 5437,
+    "delta_vs_original_eur": -39731.5099999995
+  },
+  {
+    "scenario": "NO_ALLNEWS_15_AND_VIX_GE_30",
+    "final_equity": 212307.9500000001,
+    "total_pnl_eur": 112307.9500000001,
+    "max_dd_eur": -3232.5899999999,
+    "max_dd_time": 1677837550000,
+    "trades": 5437,
+    "delta_vs_original_eur": -39731.5099999995
+  },
+  {
+    "scenario": "NO_ALLNEWS_60",
+    "final_equity": 211849.8900000001,
+    "total_pnl_eur": 111849.8900000001,
+    "max_dd_eur": -3232.5899999999,
+    "max_dd_time": 1677837550000,
+    "trades": 5402,
+    "delta_vs_original_eur": -40189.5699999995
+  },
+  {
+    "scenario": "NO_ALLNEWS_60_AND_VIX_GE_30",
+    "final_equity": 211849.8900000001,
+    "total_pnl_eur": 111849.8900000001,
+    "max_dd_eur": -3232.5899999999,
+    "max_dd_time": 1677837550000,
+    "trades": 5402,
+    "delta_vs_original_eur": -40189.5699999995
+  },
+  {
+    "scenario": "NO_ALLNEWS_60_AND_VIX_GE_25",
+    "final_equity": 211849.8900000001,
+    "total_pnl_eur": 111849.8900000001,
+    "max_dd_eur": -3232.5899999999,
+    "max_dd_time": 1677837550000,
+    "trades": 5402,
+    "delta_vs_original_eur": -40189.5699999995
+  },
+  {
+    "scenario": "NO_ALLNEWS_60_AND_VIX_GE_20",
+    "final_equity": 211849.8900000001,
+    "total_pnl_eur": 111849.8900000001,
+    "max_dd_eur": -3232.5899999999,
+    "max_dd_time": 1677837550000,
+    "trades": 5402,
+    "delta_vs_original_eur": -40189.5699999995
+  }
+]

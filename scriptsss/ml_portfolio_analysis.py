@@ -16,6 +16,12 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import TimeSeriesSplit, cross_validate
 from sklearn.metrics import classification_report, confusion_matrix
 from io import StringIO
+try:
+    import requests
+    REQUESTS_AVAILABLE = True
+except ImportError:
+    REQUESTS_AVAILABLE = False
+    print("[WARN] requests not installed. Install with 'pip install requests' to fetch VIX from CBOE if needed.")
 # Optional libs
 try:
     import xgboost as xgb
@@ -38,12 +44,7 @@ try:
 except ImportError:
     YFINANCE_AVAILABLE = False
     print("[WARN] yfinance not installed. Install with 'pip install yfinance' to fetch VIX/BTC data.")
-try:
-    import requests
-    REQUESTS_AVAILABLE = True
-except ImportError:
-    REQUESTS_AVAILABLE = False
-    print("[WARN] requests not installed. Install with 'pip install requests' to fetch VIX from CBOE if needed.")
+
 # ---------------- CONFIG ----------------
 BASE = Path(".")
 REPORT_PATH = BASE / "data" / "reports" / "multi_asset_report.csv"
@@ -61,25 +62,25 @@ TOP_N_GOOD = 20
 RANDOM_STATE = 42
 warnings.filterwarnings("ignore")
 sns.set(style="whitegrid")
+
 # ---------------- Helpers: logging ----------------
 def log_info(msg):
     print("[INFO]", msg)
+
 def log_debug(msg):
     print("[DEBUG]", msg)
+
 def log_warn(msg):
     print("[WARN]", msg)
+
 # ---------------- Load price data ----------------
 def load_price_data(symbol, timeframe_preference=('M5','D1')):
-    """Carica file {symbol}_{TF}_2020_2025.csv.
-    Supporta file con colonne DATE, TIME oppure time, oppure primo colonna datetime.
-    Ritorna DataFrame con colonne OPEN,HIGH,LOW,CLOSE e DatetimeIndex.
-    """
+    """Carica file {symbol}_{TF}_2020_2025.csv."""
     for tf in timeframe_preference:
         path = DATASETS_FOLDER / f"{symbol}_{tf}_2020_2025.csv"
         if not path.exists():
             continue
         try:
-            # try common separators: tab or comma
             try:
                 df = pd.read_csv(path, sep='\t')
             except Exception:
@@ -93,12 +94,10 @@ def load_price_data(symbol, timeframe_preference=('M5','D1')):
                 df['time'] = pd.to_datetime(df['time'], errors='coerce')
                 df.set_index('time', inplace=True)
             else:
-                # assume first column is datetime-like
                 try:
                     df.index = pd.to_datetime(df.iloc[:,0], errors='coerce')
                 except Exception:
                     pass
-            # rename open/high/low/close
             cols_map = {}
             for c in df.columns:
                 if c.lower() in ['open','high','low','close']:
@@ -115,7 +114,7 @@ def load_price_data(symbol, timeframe_preference=('M5','D1')):
         except Exception as e:
             log_warn(f"Failed to load {path}: {e}")
             continue
-    # If not found locally and symbol is VIX or BTC, fetch from yfinance if available
+    
     yf_symbols = {'VIX': '^VIX', 'BTC': 'BTC-USD'}
     if symbol in yf_symbols and YFINANCE_AVAILABLE:
         for tf in timeframe_preference:
@@ -126,21 +125,20 @@ def load_price_data(symbol, timeframe_preference=('M5','D1')):
             else:
                 continue
             try:
-                df = yf.download(yf_symbols[symbol], start='2020-01-01', end='2025-12-31', interval=interval)
-                if df.empty or len(df) < 100:  # Check for sufficient data, skip partial intraday
+                df = yf.download(yf_symbols[symbol], start='2020-01-01', end='2025-12-31', interval=interval, progress=False)
+                if df.empty or len(df) < 100:
                     continue
                 df = df[['Open', 'High', 'Low', 'Close']].rename(columns={'Open': 'OPEN', 'High': 'HIGH', 'Low': 'LOW', 'Close': 'CLOSE'})
                 df.index.name = 'time'
                 df = df.astype(float)
                 log_info(f"Fetched {symbol} {tf} rows={len(df)} from yfinance")
-                # Save to local file
                 path = DATASETS_FOLDER / f"{symbol}_{tf}_2020_2025.csv"
                 df.to_csv(path)
                 return df
             except Exception as e:
                 log_warn(f"Failed to fetch {symbol} {tf} from yfinance: {e}")
                 continue
-    # Fallback for VIX daily from CBOE if requests available
+    
     if symbol == 'VIX' and REQUESTS_AVAILABLE:
         for tf in timeframe_preference:
             if tf != 'D1':
@@ -154,8 +152,6 @@ def load_price_data(symbol, timeframe_preference=('M5','D1')):
                 df = df.set_index('time')[['OPEN', 'HIGH', 'LOW', 'CLOSE']]
                 df = df.loc['2020-01-01':'2025-12-31']
                 df = df.dropna()
-                if df.empty:
-                    continue
                 log_info(f"Fetched VIX {tf} rows={len(df)} from CBOE")
                 path = DATASETS_FOLDER / f"{symbol}_{tf}_2020_2025.csv"
                 df.to_csv(path)
@@ -163,58 +159,27 @@ def load_price_data(symbol, timeframe_preference=('M5','D1')):
             except Exception as e:
                 log_warn(f"Failed to fetch VIX {tf} from CBOE: {e}")
                 continue
-    # If not found locally and symbol is VIX, fetch from Polygon if available
-    if symbol == 'VIX' and POLYGON_AVAILABLE:
-        client = RESTClient()  # Assumes API key is configured in environment
-        for tf in timeframe_preference:
-            if tf == 'M5':
-                multiplier = 5
-                timespan = 'minute'
-            elif tf == 'D1':
-                multiplier = 1
-                timespan = 'day'
-            else:
-                continue
-            try:
-                aggs = client.get_aggs("I:VIX", multiplier, timespan, "2020-01-01", "2025-12-31")
-                if not aggs:
-                    continue
-                data = {
-                    'time': [pd.to_datetime(agg.timestamp, unit='ms') for agg in aggs],
-                    'OPEN': [agg.open for agg in aggs],
-                    'HIGH': [agg.high for agg in aggs],
-                    'LOW': [agg.low for agg in aggs],
-                    'CLOSE': [agg.close for agg in aggs],
-                }
-                df = pd.DataFrame(data)
-                df.set_index('time', inplace=True)
-                df = df.sort_index()
-                log_info(f"Fetched VIX {tf} rows={len(df)} from Polygon")
-                # Save to local file for future use
-                path = DATASETS_FOLDER / f"{symbol}_{tf}_2020_2025.csv"
-                df.to_csv(path)
-                return df
-            except Exception as e:
-                log_warn(f"Failed to fetch VIX {tf} from Polygon: {e}")
-                continue
+    
     log_warn(f"No dataset found for {symbol} (checked {timeframe_preference})")
     return None
-# ---------------- Equity high-res ----------------
+
+# ---------------- Equity high-res (OPTIMIZED) ----------------
 def compute_equity_highres(df_trades, m5_db, initial_balance=INITIAL_BALANCE, freq='5min'):
-    """Ricostruisce equity ad alta risoluzione a partire da trades e database m5_db dict(symbol->df)."""
-    log_info("Computing high-resolution equity...")
+    """Ricostruisce equity ad alta risoluzione - VERSIONE OTTIMIZZATA."""
+    log_info("Computing high-resolution equity (optimized)...")
     df = df_trades.copy()
     if 'Open time' in df.columns and 'Close time' in df.columns:
         df['Open time'] = pd.to_datetime(df['Open time'], dayfirst=True, errors='coerce')
         df['Close time'] = pd.to_datetime(df['Close time'], dayfirst=True, errors='coerce')
     else:
         raise ValueError("Trades file missing 'Open time'/'Close time' columns")
+    
     start = df['Open time'].min()
     end = df['Close time'].max()
     timeline = pd.date_range(start=start, end=end, freq=freq)
     high_res = pd.DataFrame(index=timeline)
     high_res.index.name = 'time'
-    # Build balance changes from realized P/L
+    
     bc = df[['Close time','Profit/Loss (Global)']].copy().sort_values('Close time')
     bc['Cumulative'] = initial_balance + bc['Profit/Loss (Global)'].cumsum()
     merged = pd.merge_asof(high_res, bc.rename(columns={'Close time':'time'}), on='time', direction='backward')
@@ -222,34 +187,58 @@ def compute_equity_highres(df_trades, m5_db, initial_balance=INITIAL_BALANCE, fr
     merged['balance'] = merged['Cumulative'].fillna(initial_balance)
     merged['equity_close'] = merged['balance'].copy()
     merged['equity_low'] = merged['balance'].copy()
-    # simulate unrealized P/L during each trade using m5_db if available
-    for idx, tr in df.iterrows():
-        sym = tr['Symbol']
+    
+    # OTTIMIZZAZIONE: Pre-process price data per symbol e usa merge_asof invece di reindex
+    log_info(f"Processing {len(df)} trades for unrealized P/L...")
+    for sym in df['Symbol'].unique():
         if sym not in m5_db:
             continue
-        mask = (merged.index >= tr['Open time']) & (merged.index < tr['Close time'])
-        if not mask.any():
-            continue
-        p = m5_db[sym].reindex(merged.index[mask], method='ffill')
-        if p.empty:
-            continue
-        # multiplier
-        mult = float(tr.get('Size',1)) * CONTRACT_SIZE.get(sym, 100)
-        entry = float(tr.get('Open price', np.nan))
-        is_buy = 'Buy' in str(tr.get('Type',''))
-        if is_buy:
-            pl_close = (p['CLOSE'] - entry) * mult
-            pl_low = (p['LOW'] - entry) * mult
-        else:
-            pl_close = (entry - p['CLOSE']) * mult
-            pl_low = (entry - p['HIGH']) * mult
-        merged.loc[mask, 'equity_close'] += pl_close.values
-        merged.loc[mask, 'equity_low'] += pl_low.values
-    log_info("Equity computed.")
+        
+        # Filtra trade per questo symbol
+        sym_trades = df[df['Symbol'] == sym].copy()
+        
+        # Pre-process price data: prepara solo i dati necessari
+        price_data = m5_db[sym][['CLOSE', 'LOW', 'HIGH']].copy()
+        
+        # Per ogni trade di questo symbol
+        for idx, tr in sym_trades.iterrows():
+            mask = (merged.index >= tr['Open time']) & (merged.index < tr['Close time'])
+            if not mask.any():
+                continue
+            
+            # Usa merge_asof invece di reindex per performance
+            subset_times = merged.index[mask].to_frame(index=False, name='time')
+            subset_with_prices = pd.merge_asof(
+                subset_times, 
+                price_data.reset_index(), 
+                left_on='time', 
+                right_on='time', 
+                direction='backward'
+            ).set_index('time')
+            
+            if subset_with_prices.empty:
+                continue
+            
+            mult = float(tr.get('Size',1)) * CONTRACT_SIZE.get(sym, 100)
+            entry = float(tr.get('Open price', np.nan))
+            is_buy = 'Buy' in str(tr.get('Type',''))
+            
+            if is_buy:
+                pl_close = (subset_with_prices['CLOSE'] - entry) * mult
+                pl_low = (subset_with_prices['LOW'] - entry) * mult
+            else:
+                pl_close = (entry - subset_with_prices['CLOSE']) * mult
+                pl_low = (entry - subset_with_prices['HIGH']) * mult
+            
+            merged.loc[mask, 'equity_close'] += pl_close.values
+            merged.loc[mask, 'equity_low'] += pl_low.values
+    
+    log_info("Equity computed (optimized).")
     return merged
+
 # ---------------- Drawdown episodes ----------------
-def detect_all_drawdown_episodes(equity_series):
-    """Detect all peak->trough->recovery episodes. Returns list of dicts."""
+def detect_all_drawdown_episodes(equity_series, debug=False):
+    """Detect all peak->trough->recovery episodes."""
     s = equity_series.dropna().copy()
     if s.empty:
         return []
@@ -259,7 +248,7 @@ def detect_all_drawdown_episodes(equity_series):
     diff = in_dd.astype(int).diff().fillna(0)
     starts = s.index[diff == 1].tolist()
     ends = s.index[diff == -1].tolist()
-    # align
+    
     if len(starts) > 0 and (len(ends) == 0 or starts[0] > ends[0]):
         ends = ends[1:]
     n = min(len(starts), len(ends))
@@ -282,7 +271,9 @@ def detect_all_drawdown_episodes(equity_series):
             'drawdown_pct': drawdown_pct,
             'duration': duration
         })
-    # fallback to single trough if none detected
+        if debug and drawdown_amt <= -2000:
+            log_debug(f"Large DD: start={start}, trough={trough_time}, recovery={end}, amt={drawdown_amt}")
+    
     if not episodes:
         trough_time = s.idxmin()
         peak_time = s[:trough_time].idxmax() if (s.index[0] < trough_time) else s.index[0]
@@ -295,6 +286,7 @@ def detect_all_drawdown_episodes(equity_series):
             'duration': trough_time - peak_time
         })
     return episodes
+
 # ---------------- VIX regime helper ----------------
 def vix_regime(v):
     try:
@@ -311,19 +303,20 @@ def vix_regime(v):
         return 'HIGH'
     else:
         return 'CRISIS'
+
 # ---------------- Analyze drawdowns vs VIX & assets ----------------
 def analyze_drawdowns_and_vix(merged_df, assets_db, thresholds=(2000,1000)):
     log_info("Analyzing drawdown episodes vs VIX/assets...")
     equity = merged_df['equity_close']
-    episodes = detect_all_drawdown_episodes(equity)
+    episodes = detect_all_drawdown_episodes(equity, debug=True)
     rows = []
     for e in episodes:
         start = e['peak_time']
         trough = e['trough_time']
         recovery = e['recovery_time']
-        dd_amt = -float(e['drawdown_amount']) # positive magnitude
+        dd_amt = -float(e['drawdown_amount'])
         duration_sec = e['duration'].total_seconds() if pd.notna(e['duration']) else np.nan
-        # VIX features
+        
         vix_mean = np.nan; vix_max = np.nan; vix_reg = 'UNKNOWN'
         if 'VIX' in assets_db:
             try:
@@ -332,7 +325,7 @@ def analyze_drawdowns_and_vix(merged_df, assets_db, thresholds=(2000,1000)):
                     vix_mean = float(vix_series.mean()); vix_max = float(vix_series.max()); vix_reg = vix_regime(vix_mean)
             except Exception:
                 pass
-        # correlations
+        
         us500_corr = np.nan; us100_corr = np.nan
         try:
             if 'US500.pro' in assets_db:
@@ -352,15 +345,18 @@ def analyze_drawdowns_and_vix(merged_df, assets_db, thresholds=(2000,1000)):
                     us100_corr = float(aligned.iloc[:,0].corr(aligned.iloc[:,1]))
         except Exception:
             pass
+        
         rows.append({
             'start': start, 'trough': trough, 'recovery': recovery,
             'drawdown_amount': dd_amt, 'duration_sec': duration_sec,
             'vix_mean': vix_mean, 'vix_max': vix_max, 'vix_regime': vix_reg,
             'US500_corr': us500_corr, 'US100_corr': us100_corr
         })
+    
     events_df = pd.DataFrame(rows)
     events_df.to_csv(OUTPUT_DIR / 'drawdown_events_all.csv', index=False)
     log_info(f"Detected {len(events_df)} drawdown episodes. Saved to drawdown_events_all.csv")
+    
     suggested_rules = []
     for thr in sorted(thresholds, reverse=True):
         df_thr = events_df[events_df['drawdown_amount'] >= thr]
@@ -376,9 +372,11 @@ def analyze_drawdowns_and_vix(merged_df, assets_db, thresholds=(2000,1000)):
                 suggested_rules.append(f"If VIX >= 30 or VIX regime HIGH/CRISIS -> reduce size by 50% or pause new trades (empirical {crisis_pct:.1f}% for drawdowns >= {thr}).")
             elif crisis_pct >= 25:
                 suggested_rules.append(f"If VIX >= 25 -> consider reducing size by 30% (empirical {crisis_pct:.1f}% for drawdowns >= {thr}).")
+        
         mean_us100_corr = df_thr['US100_corr'].dropna().mean() if 'US100_corr' in df_thr.columns else np.nan
         if not np.isnan(mean_us100_corr) and mean_us100_corr > 0.25:
             suggested_rules.append(f"High mean correlation with US100 ({mean_us100_corr:.2f}) for drawdowns >= {thr}: consider hedging Nasdaq exposure when correlation > 0.25.")
+    
     summary = {
         'total_episodes': len(events_df),
         'events_ge_1000': int((events_df['drawdown_amount'] >= 1000).sum()) if not events_df.empty else 0,
@@ -390,7 +388,8 @@ def analyze_drawdowns_and_vix(merged_df, assets_db, thresholds=(2000,1000)):
     for r in suggested_rules:
         log_info(" - " + r)
     return suggested_rules
-# ---------------- Top best periods (e.g. top weeks) ----------------
+
+# ---------------- Top best periods ----------------
 def top_k_best_periods(equity, freq='W', top_k=20):
     rets = equity.pct_change().dropna()
     try:
@@ -410,6 +409,7 @@ def top_k_best_periods(equity, freq='W', top_k=20):
         start = (pd.to_datetime(idx) - offset + pd.Timedelta(seconds=1))
         periods.append({'start': start, 'end': pd.to_datetime(idx), 'return': float(r)})
     return periods
+
 # ---------------- Compute window features ----------------
 def compute_window_features(start, end, equity_series, assets_db, news_df=None):
     features = {}
@@ -428,7 +428,7 @@ def compute_window_features(start, end, equity_series, assets_db, news_df=None):
         peak = window_eq.cummax(); features['eq_window_maxdd'] = (window_eq - peak).min()
         features['eq_mean_ret'] = window_eq.pct_change().mean(); features['eq_skew'] = window_eq.pct_change().skew()
         features['eq_kurt'] = window_eq.pct_change().kurt()
-    # assets
+    
     for sym, df in assets_db.items():
         try:
             s = df['CLOSE'].reindex(pd.date_range(start=start, end=end, freq='D'), method='ffill').dropna()
@@ -447,7 +447,7 @@ def compute_window_features(start, end, equity_series, assets_db, news_df=None):
             features[f'{sym}_corr_with_eq'] = aligned['asset'].corr(aligned['eq'])
         except Exception:
             features[f'{sym}_corr_with_eq'] = np.nan
-    # VIX summary
+    
     if 'VIX' in assets_db:
         try:
             v = assets_db['VIX']['CLOSE'].reindex(pd.date_range(start=start, end=end, freq='D'), method='ffill').dropna()
@@ -456,7 +456,7 @@ def compute_window_features(start, end, equity_series, assets_db, news_df=None):
             features['vix_regime'] = vix_regime(features['vix_mean']) if not math.isnan(features.get('vix_mean', np.nan)) else 'UNKNOWN'
         except Exception:
             features['vix_mean'] = np.nan; features['vix_max'] = np.nan; features['vix_regime'] = 'UNKNOWN'
-    # news
+    
     if news_df is not None and not news_df.empty:
         news_window = news_df[(news_df['time'] >= start) & (news_df['time'] <= end)]
         features['news_count'] = len(news_window)
@@ -467,6 +467,7 @@ def compute_window_features(start, end, equity_series, assets_db, news_df=None):
     else:
         features['news_count'] = np.nan; features['news_sent_mean'] = np.nan; features['news_sent_std'] = np.nan
     return features
+
 # ---------------- Build ML dataset ----------------
 def build_ml_dataset(merged, df_trades, assets_to_load=('US500.pro','US100.pro','BTC','VIX','GOLD.pro'), top_n_draw=TOP_N_DRAWDOWNS, top_n_good=TOP_N_GOOD, news_path=None):
     assets_db = {}
@@ -478,26 +479,26 @@ def build_ml_dataset(merged, df_trades, assets_to_load=('US500.pro','US100.pro',
         except Exception:
             continue
     equity = merged['equity_close']
-    # drawdown windows
+    
     dd_eps = detect_all_drawdown_episodes(equity)
     dd_windows = []
     for e in dd_eps:
         start = e.get('peak_time'); end = e.get('recovery_time') if pd.notna(e.get('recovery_time')) else e.get('trough_time')
         dd_windows.append((start,end))
-    # best periods
+    
     best_periods = top_k_best_periods(equity, freq='W', top_k=top_n_good)
     best_windows = [(p['start'], p['end']) for p in best_periods]
-    # news
+    
     news_df = None
     if news_path and Path(news_path).exists():
         news_df = pd.read_csv(news_path); news_df['time'] = pd.to_datetime(news_df['time'], errors='coerce')
-    # assemble rows
+    
     rows = []
     for s,e in dd_windows:
         f = compute_window_features(s,e,equity, assets_db, news_df=news_df); f['label'] = 1; rows.append(f)
     for s,e in best_windows:
         f = compute_window_features(s,e,equity, assets_db, news_df=news_df); f['label'] = 2; rows.append(f)
-    # neutral windows: generate similar count of neutral windows by scanning timeline
+    
     labeled_intervals = [(r['window_start'], r['window_end']) for r in rows if 'window_start' in r and 'window_end' in r]
     all_times = equity.index
     neutral_count_target = max(1, len(rows)//2)
@@ -516,13 +517,18 @@ def build_ml_dataset(merged, df_trades, assets_to_load=('US500.pro','US100.pro',
             f = compute_window_features(start, end, equity, assets_db, news_df=news_df)
             f['label'] = 0; rows.append(f); labeled_intervals.append((start,end)); neutral_added += 1
         idx += step
+    
     df = pd.DataFrame(rows)
     if 'window_start' in df.columns:
         df.drop(columns=['window_start','window_end'], inplace=True, errors='ignore')
     df = df.loc[:, df.notna().any(axis=0)]
     df.to_csv(OUTPUT_DIR / 'ml_raw_dataset.csv', index=False)
     log_info("ML dataset saved to ml_raw_dataset.csv, rows=" + str(len(df)))
+    
+    label_counts = df['label'].value_counts()
+    log_info(f"Label distribution: {label_counts.to_dict()}")
     return df
+
 # ---------------- Train and report ----------------
 def train_and_report(df, target_col='label'):
     df = df.copy().dropna(axis=1, how='all')
@@ -532,7 +538,7 @@ def train_and_report(df, target_col='label'):
     y = df[target_col].astype(int); X = df.drop(columns=[target_col])
     X = X.select_dtypes(include=[np.number]).fillna(0.0)
     tscv = TimeSeriesSplit(n_splits=5)
-    rf = RandomForestClassifier(n_estimators=200, random_state=RANDOM_STATE)
+    rf = RandomForestClassifier(n_estimators=200, random_state=RANDOM_STATE, class_weight='balanced')
     lr = LogisticRegression(max_iter=2000)
     models = {'RandomForest': rf, 'LogisticRegression': lr}
     if XGBOOST_AVAILABLE:
@@ -547,7 +553,7 @@ def train_and_report(df, target_col='label'):
             ypred = pipe.predict(X)
             report = classification_report(y, ypred, output_dict=True)
             results[name]['train_report'] = report
-            # feature importance if available
+            
             try:
                 clf = pipe.named_steps['clf']
                 fi = None
@@ -561,7 +567,7 @@ def train_and_report(df, target_col='label'):
                     plt.figure(figsize=(10,6)); fi_series.head(30).plot(kind='bar'); plt.title(f'Feature importance {name}'); plt.tight_layout(); plt.savefig(OUTPUT_DIR / f'feature_importance_{name}.png'); plt.close()
             except Exception as e:
                 log_warn(f"Feature importance failed for {name}: {e}")
-            # SHAP
+            
             if SHAP_AVAILABLE and name == 'RandomForest':
                 try:
                     explainer = shap.TreeExplainer(pipe.named_steps['clf'])
@@ -572,7 +578,7 @@ def train_and_report(df, target_col='label'):
                     log_warn(f"SHAP failed: {e}")
         except Exception as e:
             results[name] = {'error': str(e)}
-    # choose best by test_accuracy
+    
     try:
         best_name = max(results.keys(), key=lambda n: results[n].get('test_accuracy', -1))
     except Exception:
@@ -593,19 +599,32 @@ def train_and_report(df, target_col='label'):
         pass
     log_info("Training completed. Results saved in " + str(OUTPUT_DIR))
     return results
+
 # ---------------- Plots ----------------
-def plot_equity(merged, output_dir=OUTPUT_DIR):
+def plot_equity(merged, output_dir=OUTPUT_DIR, label='Equity'):
     plt.figure(figsize=(14,7))
     plt.plot(merged.index, merged['balance'], lw=1, label='Balance')
-    plt.plot(merged.index, merged['equity_close'], lw=1, label='Equity CLOSE')
-    plt.plot(merged.index, merged['equity_low'], lw=1, label='Equity LOW')
+    plt.plot(merged.index, merged['equity_close'], lw=1, label=f'{label} CLOSE')
+    plt.plot(merged.index, merged['equity_low'], lw=1, label=f'{label} LOW')
     peak = merged['equity_low'].cummax(); dd = merged['equity_low'] - peak
     try:
         t = dd.idxmin(); v = merged.loc[t,'equity_low']; plt.scatter([t], [v], color='black', s=80, label='Max DD')
     except Exception:
         pass
-    plt.legend(); plt.title('Equity curve high-res'); plt.tight_layout(); plt.savefig(output_dir / 'global_equity_highres.png'); plt.close()
-    log_info("Saved equity plot.")
+    plt.legend(); plt.title(f'{label} curve high-res'); plt.tight_layout(); plt.savefig(output_dir / f'global_{label.lower().replace(" ", "_")}_highres.png'); plt.close()
+    log_info(f"Saved {label} plot.")
+
+def plot_equity_comparison(merged_original, merged_adjusted, output_dir=OUTPUT_DIR, label_original='Original', label_adjusted='Adjusted'):
+    plt.figure(figsize=(14,7))
+    plt.plot(merged_original.index, merged_original['equity_close'], label=f'{label_original} Equity')
+    plt.plot(merged_adjusted.index, merged_adjusted['equity_close'], label=f'{label_adjusted} Equity')
+    plt.legend()
+    plt.title(f'{label_original} vs {label_adjusted} Equity Comparison')
+    plt.tight_layout()
+    plt.savefig(output_dir / f'equity_comparison_{label_adjusted.lower().replace(" ", "_")}.png')
+    plt.close()
+    log_info(f"Saved equity comparison plot for {label_adjusted}.")
+
 def plot_equity_vs_assets(merged, assets_db, output_dir=OUTPUT_DIR):
     try:
         equity_daily = merged['equity_close'].resample('D').last().dropna()
@@ -626,7 +645,7 @@ def plot_equity_vs_assets(merged, assets_db, output_dir=OUTPUT_DIR):
         except Exception:
             continue
     plt.title('Equity vs Assets (base100)'); plt.legend(loc='upper left'); plt.tight_layout(); plt.savefig(output_dir / 'equity_vs_assets_base100.png'); plt.close()
-    # equity vs VIX
+    
     if 'VIX' in assets_db:
         try:
             vix = assets_db['VIX']['CLOSE'].resample('D').last().reindex(equity_daily.index, method='ffill')
@@ -636,14 +655,17 @@ def plot_equity_vs_assets(merged, assets_db, output_dir=OUTPUT_DIR):
         except Exception as e:
             log_warn(f"Error plotting VIX: {e}")
     log_info("Saved equity vs assets plots.")
+
 def correlation_heatmap(df_features, output_dir=OUTPUT_DIR):
     try:
+        df_features = df_features.select_dtypes(include=[np.number])
         corr = df_features.corr()
         plt.figure(figsize=(12,10)); sns.heatmap(corr, cmap='coolwarm', center=0); plt.title('Correlation Heatmap'); plt.tight_layout(); plt.savefig(output_dir / 'features_correlation_heatmap.png'); plt.close()
         log_info("Saved features correlation heatmap.")
     except Exception as e:
         log_warn(f"Heatmap failed: {e}")
-# ---------------- Recommendations ----------------
+
+# ---------------- Recommendations (FIXED) ----------------
 def generate_recommendations(df_ml, merged, assets_db, extra_recs=None, output_dir=OUTPUT_DIR):
     recs = []
     if df_ml is None or df_ml.empty:
@@ -653,31 +675,42 @@ def generate_recommendations(df_ml, merged, assets_db, extra_recs=None, output_d
         stds = df_ml.groupby('label').std(numeric_only=True)
         means.to_csv(output_dir / 'feature_means_by_label.csv'); stds.to_csv(output_dir / 'feature_std_by_label.csv')
         recs.append("Feature means/std saved to CSV")
-        # top features by absolute difference between drawdown(1) and neutral(0)
+        
         if 0 in means.index and 1 in means.index:
             diff = (means.loc[1] - means.loc[0]).abs().sort_values(ascending=False)
             recs.append("Top features that separate drawdown vs neutral: " + ", ".join(diff.head(12).index.tolist()))
         else:
             recs.append("Top features (general): " + ", ".join(means.abs().sum().sort_values(ascending=False).head(12).index.tolist()))
+        
+        # FIXED: Handle vix_mean comparison
         if 'vix_mean' in df_ml.columns:
-            vix_draw = df_ml[df_ml['label']==1]['vix_mean'].dropna(); vix_neu = df_ml[df_ml['label']==0]['vix_mean'].dropna()
-            if not vix_draw.empty and not vix_neu.empty:
-                if vix_draw.mean() > vix_neu.mean():
+            vix_draw = df_ml[df_ml['label']==1]['vix_mean'].dropna()
+            vix_neu = df_ml[df_ml['label']==0]['vix_mean'].dropna()
+            if len(vix_draw) > 0 and len(vix_neu) > 0:  # Check length instead of empty
+                vix_draw_mean = vix_draw.mean()
+                vix_neu_mean = vix_neu.mean()
+                if vix_draw_mean > vix_neu_mean:
                     thr = float(np.percentile(df_ml['vix_mean'].dropna(), 75))
                     recs.append(f"Rule suggestion: reduce size when VIX > {thr:.2f} (75th percentile).")
                 else:
                     thr = float(np.percentile(df_ml['vix_mean'].dropna(), 25))
                     recs.append(f"Rule suggestion: consider increasing size when VIX < {thr:.2f} (25th percentile).")
-    # max drawdown info
+    
     try:
-        peak = merged['equity_close'].cummax(); dd = merged['equity_close'] - peak; max_dd = dd.min(); time_dd = dd.idxmin()
-        recs.append(f"Max drawdown observed (close): {max_dd:.2f} at {time_dd}")
+        eq_close = pd.to_numeric(merged['equity_close'], errors='coerce').dropna()
+        if not eq_close.empty:
+            peak = eq_close.cummax()
+            dd = eq_close - peak
+            max_dd = dd.min()
+            time_dd = dd.idxmin()
+            recs.append(f"Max drawdown observed (close): {max_dd:.2f} at {time_dd}")
     except Exception as e:
         recs.append(f"Error computing max drawdown: {e}")
-    # add external suggestions
+    
     if extra_recs:
         for r in extra_recs: recs.append(str(r))
-    # write out
+    recs.append("To diversify during high VIX/equity crises, consider adding algorithms on bonds (e.g., US Treasuries), safe-haven currencies (e.g., USDJPY long USD), or increase weight on gold, defensive sectors like utilities, healthcare, consumer staples.")
+    
     out_file = output_dir / 'portfolio_recommendations.txt'
     with open(out_file, 'w', encoding='utf-8') as f:
         f.write("=== Portfolio Recommendations ===\n\n")
@@ -685,13 +718,9 @@ def generate_recommendations(df_ml, merged, assets_db, extra_recs=None, output_d
             f.write(f"- {r}\n")
     log_info("Recommendations saved to " + str(out_file))
     return recs
+
 # ---------------- News analysis scaffold ----------------
 def analyze_news_impact(df_trades, merged, assets_db, news_df, events=['NFP','CPI','FOMC'], windows_minutes=(10,60)):
-    """
-    Placeholder function to analyze news impact.
-    news_df expected columns: time (datetime), event_type, sentiment (optional)
-    For each event type, compute PnL and stats in windows +/- windows_minutes minutes.
-    """
     results = {}
     if news_df is None or news_df.empty:
         log_warn("No news data provided to analyze_news_impact.")
@@ -704,7 +733,6 @@ def analyze_news_impact(df_trades, merged, assets_db, news_df, events=['NFP','CP
             t = row['time']
             for w in windows_minutes:
                 start = t - pd.Timedelta(minutes=w); end = t + pd.Timedelta(minutes=w)
-                # equity snapshot
                 try:
                     eq_start = merged['equity_close'].asof(start)
                     eq_end = merged['equity_close'].asof(end)
@@ -713,11 +741,72 @@ def analyze_news_impact(df_trades, merged, assets_db, news_df, events=['NFP','CP
                     pnl = np.nan
                 stats.append({'event': ev, 'time': t, 'window_min': w, 'pnl': pnl})
         results[ev] = pd.DataFrame(stats)
-        # save per event
         if not results[ev].empty:
             results[ev].to_csv(OUTPUT_DIR / f'news_impact_{ev}.csv', index=False)
     log_info("News impact analysis finished (scaffold).")
     return results
+
+# ---------------- Simulate VIX adjusted equity ----------------
+def simulate_vix_adjusted_equity(df_trades, m5_db, vix_df, thresholds=[25,30], reductions=[0.7,0.5], initial_balance=INITIAL_BALANCE):
+    """Simulate equity with size reduction based on VIX at trade open time."""
+    log_info(f"Simulating VIX-adjusted equity with thresholds={thresholds}, reductions={reductions}...")
+    df = df_trades.copy()
+    df['Open time'] = pd.to_datetime(df['Open time'], dayfirst=True, errors='coerce')
+    for idx, row in df.iterrows():
+        open_time = row['Open time']
+        vix = vix_df['CLOSE'].asof(open_time)
+        try:
+            vix = float(vix)
+        except (ValueError, TypeError):
+            continue
+        if np.isnan(vix):
+            continue
+        f = 1.0
+        for t, r in sorted(zip(thresholds, reductions), reverse=True):
+            if vix >= t:
+                f = r
+                break
+        df.at[idx, 'Size'] = row['Size'] * f
+        df.at[idx, 'Profit/Loss (Global)'] = row['Profit/Loss (Global)'] * f
+    merged_adjusted = compute_equity_highres(df, m5_db, initial_balance=initial_balance)
+    merged_adjusted.to_csv(OUTPUT_DIR / 'equity_adjusted_series.csv')
+    log_info("Adjusted equity series saved.")
+    return merged_adjusted
+
+# ---------------- Optimize VIX thresholds (SIMPLIFIED) ----------------
+def optimize_vix_thresholds(df_trades, m5_db, vix_df, initial_balance=INITIAL_BALANCE):
+    """Grid search for best VIX thresholds - SIMPLIFIED VERSION."""
+    log_info("Optimizing VIX thresholds (simplified grid search)...")
+    # Reduced grid: only test a few meaningful combinations
+    test_configs = [
+        ([25], [0.7]),       # Single threshold
+        ([30], [0.5]),       # Single threshold
+        ([25, 30], [0.7, 0.5])  # Double threshold
+    ]
+    
+    best_dd = -np.inf
+    best_params = None
+    
+    for i, (thresholds, reductions) in enumerate(test_configs):
+        log_info(f"Testing config {i+1}/{len(test_configs)}: thresholds={thresholds}, reductions={reductions}")
+        try:
+            merged = simulate_vix_adjusted_equity(df_trades, m5_db, vix_df, thresholds=thresholds, reductions=reductions, initial_balance=initial_balance)
+            peak = merged['equity_close'].cummax()
+            dd = (merged['equity_close'] - peak).min()
+            log_info(f"  -> Max DD: {dd:.2f}")
+            if dd > best_dd:
+                best_dd = dd
+                best_params = (thresholds, reductions)
+        except Exception as e:
+            log_warn(f"Error testing config {i+1}: {e}")
+            continue
+    
+    if best_params:
+        log_info(f"Best params: thresholds={best_params[0]}, reductions={best_params[1]} with max DD={best_dd:.2f}")
+    else:
+        log_warn("No valid configuration found during optimization")
+    return best_params
+
 # ---------------- Main pipeline ----------------
 def run_full_pipeline(report_path=REPORT_PATH, news_path=None):
     log_info(f"Starting pipeline. Report: {report_path}")
@@ -729,7 +818,7 @@ def run_full_pipeline(report_path=REPORT_PATH, news_path=None):
     log_info(f"Trades loaded: {len(df_trades)} rows")
     symbols = df_trades['Symbol'].unique()
     log_info(f"Unique symbols in trades: {len(symbols)}")
-    # load price data for symbols + try VIX
+    
     assets_db = {}
     loaded = 0
     for s in symbols:
@@ -739,22 +828,23 @@ def run_full_pipeline(report_path=REPORT_PATH, news_path=None):
                 assets_db[s] = d; loaded += 1
         except Exception as e:
             log_warn(f"Error loading {s}: {e}")
+    vix_df = None
     if 'VIX' not in assets_db:
-        d = load_price_data('VIX', timeframe_preference=('D1','M5'))
-        if d is not None:
-            assets_db['VIX'] = d; loaded += 1
+        vix_df = load_price_data('VIX', timeframe_preference=('D1','M5'))
+        if vix_df is not None:
+            assets_db['VIX'] = vix_df; loaded += 1
     log_info(f"Loaded asset datasets: {loaded}")
-    # compute equity
+    
     merged = compute_equity_highres(df_trades, assets_db)
     merged['equity_close'].to_csv(OUTPUT_DIR / 'equity_close_series.csv')
     log_info("Equity series saved.")
-    # analyze drawdowns & vix
+    
     try:
         extra_recs = analyze_drawdowns_and_vix(merged, assets_db, thresholds=(2000,1000))
     except Exception as e:
         log_warn("analyze_drawdowns_and_vix failed: " + str(e))
         extra_recs = []
-    # build ml dataset
+    
     df_ml = build_ml_dataset(merged, df_trades, assets_to_load=('US500.pro','US100.pro','BTC','VIX','GOLD.pro'), news_path=news_path)
     if df_ml is None or df_ml.empty:
         log_warn("ML dataset empty.")
@@ -764,15 +854,15 @@ def run_full_pipeline(report_path=REPORT_PATH, news_path=None):
             correlation_heatmap(df_ml.drop(columns=['label'], errors='ignore'))
         except Exception as e:
             log_warn("correlation heatmap error: " + str(e))
-    # train
+    
     results = train_and_report(df_ml, target_col='label')
-    # plots
+    
     try:
         plot_equity(merged)
         plot_equity_vs_assets(merged, assets_db)
     except Exception as e:
         log_warn("plotting error: " + str(e))
-    # news analysis (scaffold)
+    
     news_df = None
     if news_path and Path(news_path).exists():
         try:
@@ -780,13 +870,30 @@ def run_full_pipeline(report_path=REPORT_PATH, news_path=None):
             analyze_news_impact(df_trades, merged, assets_db, news_df, events=['NFP','CPI','FOMC'], windows_minutes=(10,60))
         except Exception as e:
             log_warn("news analysis failed: " + str(e))
-    # recommendations (include extra rules from drawdown analysis)
+    
     try:
         recs = generate_recommendations(df_ml, merged, assets_db, extra_recs=extra_recs)
         log_info("Recommendations generated. Count: " + str(len(recs)))
     except Exception as e:
         log_warn("generate_recommendations failed: " + str(e))
+    
+    if vix_df is not None:
+        log_info("Running VIX-based simulations...")
+        merged_adjusted = simulate_vix_adjusted_equity(df_trades, assets_db, vix_df)
+        plot_equity(merged_adjusted, label='Adjusted Equity')
+        plot_equity_comparison(merged, merged_adjusted)
+        
+        # Simplified optimization
+        best_params = optimize_vix_thresholds(df_trades, assets_db, vix_df)
+        if best_params:
+            merged_best = simulate_vix_adjusted_equity(df_trades, assets_db, vix_df, thresholds=list(best_params[0]), reductions=list(best_params[1]))
+            plot_equity(merged_best, label='Optimized Adjusted Equity')
+            plot_equity_comparison(merged, merged_best, label_adjusted='Optimized Adjusted')
+    else:
+        log_warn("VIX data not available for simulation.")
+    
     log_info("Pipeline finished. Check outputs in " + str(OUTPUT_DIR))
     return results
+
 if __name__ == "__main__":
     run_full_pipeline()

@@ -1,0 +1,62 @@
+================================================================================
+ANALISI QUANTITATIVA COMPLETA - RISK MANAGEMENT REPORT
+================================================================================
+
+1. PERFORMANCE ORIGINALE:
+   Capitale iniziale: €99,988.00
+   Capitale finale: €252,282.54
+   Ritorno totale: 152.31%
+   Max Drawdown: -2.73%
+   Sharpe Ratio: -8.12
+
+2. PERFORMANCE IN CRISI:
+   COVID-19:
+     PnL: €15,015.05
+     VIX medio: 48.4
+     S&P500: -27.5%
+     Trades: 122
+   Inflation 2022:
+     PnL: €15,015.05
+     VIX medio: 25.6
+     S&P500: -19.1%
+     Trades: 122
+   Ukraine War:
+     PnL: €15,015.05
+     VIX medio: 27.3
+     S&P500: 3.3%
+     Trades: 122
+
+3. SCENARI RISK MANAGEMENT VIX:
+   Original:
+     Equity finale: €252,282.54
+     Max DD: -2.73%
+     Sharpe: -8.12
+   Baseline:
+     Equity finale: €216,457.89
+     Max DD: -1.96%
+     Sharpe: -7.07
+     Adjustments: 141
+   Conservative_VIX25:
+     Equity finale: €216,457.89
+     Max DD: -1.96%
+     Sharpe: -7.07
+     Adjustments: 141
+   Aggressive_VIX20:
+     Equity finale: €212,452.37
+     Max DD: -2.00%
+     Sharpe: -7.24
+     Adjustments: 243
+
+4. REGOLE SUGGERITE DALL'ANALISI:
+   • If VIX >= 25 -> consider reducing size by 30% (empirical 36.8% for drawdowns >= 2000).
+   • If VIX >= 25 -> consider reducing size by 30% (empirical 41.6% for drawdowns >= 1000).
+
+5. RACCOMANDAZIONI DIVERSIFICAZIONE:
+   Asset a bassa correlazione con il portafoglio: GOLD.pro, USDJPY.pro, US100.pro
+   Considera di aumentare l'esposizione a questi asset per diversificazione
+
+6. REGOLE OPERATIVE IMMEDIATE:
+   • IF VIX >= 30 THEN reduce position size by 50%
+   • IF VIX >= 25 THEN reduce position size by 30%
+   • IF correlation(portfolio, NASDAQ) > 0.25 THEN hedge with put options
+   • DURING equity crisis: consider long positions on GOLD.pro or USDJPY.pro

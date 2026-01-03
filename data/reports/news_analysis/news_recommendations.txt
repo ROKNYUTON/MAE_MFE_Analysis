@@ -1,0 +1,38 @@
+=== News Impact Recommendations ===
+
+Event: CPI | Window ±15m
+  Empirical mean PnL: -9.79 | Empirical 5%: -112.07
+  Predicted mean PnL: 3.782914042460205 | Predicted 5%: -152.64213483875275
+  Baseline mean (no-event): 1.99 | VIX mean: nan
+  ACTION: OK  REASON: 
+
+Event: CPI | Window ±60m
+  Empirical mean PnL: 8.46 | Empirical 5%: -173.57
+  Predicted mean PnL: 3.782914042460205 | Predicted 5%: -152.64213483875275
+  Baseline mean (no-event): 12.05 | VIX mean: nan
+  ACTION: OK  REASON: 
+
+Event: FOMC | Window ±15m
+  Empirical mean PnL: 1.73 | Empirical 5%: -80.02
+  Predicted mean PnL: 4.834663425973083 | Predicted 5%: -151.0661661811538
+  Baseline mean (no-event): 2.09 | VIX mean: nan
+  ACTION: OK  REASON: 
+
+Event: FOMC | Window ±60m
+  Empirical mean PnL: 29.92 | Empirical 5%: -167.29
+  Predicted mean PnL: 4.834663425973083 | Predicted 5%: -151.0661661811538
+  Baseline mean (no-event): 10.82 | VIX mean: nan
+  ACTION: OK  REASON: 
+
+Event: NFP | Window ±15m
+  Empirical mean PnL: 7.64 | Empirical 5%: -94.61
+  Predicted mean PnL: 6.522005943164973 | Predicted 5%: -147.28678172780025
+  Baseline mean (no-event): 2.32 | VIX mean: nan
+  ACTION: OK  REASON: 
+
+Event: NFP | Window ±60m
+  Empirical mean PnL: -0.24 | Empirical 5%: -191.45
+  Predicted mean PnL: 6.522005943164973 | Predicted 5%: -147.28678172780025
+  Baseline mean (no-event): 11.34 | VIX mean: nan
+  ACTION: OK  REASON: 
+

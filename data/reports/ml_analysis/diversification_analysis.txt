@@ -1,0 +1,31 @@
+=== ANALISI DIVERSIFICAZIONE ===
+
+Correlazioni con portafoglio:
+  USDJPY.pro: 0.057
+  VIX: -0.063
+  BTC: 0.069
+  GOLD.pro: 0.079
+  DE30.pro: 0.194
+  US500.pro: 0.209
+  US100.pro: 0.222
+
+Suggerimenti:
+  • Asset a bassa correlazione con il portafoglio: GOLD.pro, USDJPY.pro, US100.pro
+  • Considera di aumentare l'esposizione a questi asset per diversificazione
+
+Strategie di Hedge Suggerite:
+
+  Gold Hedge:
+    Aumenta posizioni long su oro durante periodi di alta volatilità
+    Asset: GOLD.pro
+    Quando: VIX > 25
+
+  USDJPY Safe Haven:
+    USD/JPY tende ad apprezzarsi in crisi di mercato
+    Asset: USDJPY.pro
+    Quando: Equity drawdown > 2%
+
+  VIX Mean Reversion:
+    Trading sul ritorno alla media del VIX
+    Asset: VIX
+    Quando: VIX > 30 (short) o VIX < 15 (long)

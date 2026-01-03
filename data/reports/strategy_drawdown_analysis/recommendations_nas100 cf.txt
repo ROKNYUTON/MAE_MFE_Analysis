@@ -1,0 +1,47 @@
+REPORT STRATEGIA: nas100 cf
+============================================================
+
+1. PERFORMANCE GENERALE:
+   Trades totali: 617
+   Win Rate: 44.7%
+   PnL Totale: €17,080
+   Equity Finale: €116,957
+   Rendimento Totale: 17.0%
+   Drawdown totali: 53
+
+2. ANALISI TOP 20 DRAWDOWN:
+   Drawdown medio (top20): €114
+   Drawdown massimo: €208
+
+   CORRELAZIONE CON VIX:
+     Coefficiente: 0.455
+     Significativo: SÌ
+     → I drawdown sono correlati con VIX alto
+     CONSIGLIO: Considera ridurre exposure quando VIX > 25
+
+   DISTRIBUZIONE PER REGIME VIX:
+     UNKNOWN: 15 drawdown (75.0%), media €99
+     HIGH: 4 drawdown (20.0%), media €158
+     VERY_HIGH: 1 drawdown (5.0%), media €161
+
+   IMPATTO NEWS:
+     Con news: 5 drawdown (25.0%), media €166
+     Senza news: 15 drawdown (75.0%), media €97
+     → I drawdown con news sono più severi!
+     CONSIGLIO: Considera pausa trading 1h prima/dopo news major
+
+3. ANALISI MACHINE LEARNING:
+   FEATURE IMPORTANCE (regressione):
+     duration_days: 0.818
+     fomc_count: 0.064
+     news_count: 0.062
+
+   CONSIGLI BASATI SU ML:
+     Feature più importante: duration_days (0.818)
+     → La durata è correlata con drawdown severi
+     AZIONE: Implementa stop loss temporali
+   ACCURATEZZA CLASSIFICAZIONE: 1.000
+
+4. RACCOMANDAZIONI OPERATIVE:
+
+============================================================

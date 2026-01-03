@@ -1,0 +1,40 @@
+REPORT STRATEGIA: gold fv
+============================================================
+
+1. PERFORMANCE GENERALE:
+   Trades totali: 701
+   Win Rate: 51.4%
+   PnL Totale: €25,373
+   Equity Finale: €125,183
+   Rendimento Totale: 25.2%
+   Drawdown totali: 67
+
+2. ANALISI TOP 20 DRAWDOWN:
+   Drawdown medio (top20): €65
+   Drawdown massimo: €131
+
+   CORRELAZIONE CON VIX:
+     Coefficiente: 0.403
+     Significativo: NO
+
+   DISTRIBUZIONE PER REGIME VIX:
+     UNKNOWN: 17 drawdown (85.0%), media €57
+     HIGH: 1 drawdown (5.0%), media €76
+     MEDIUM: 1 drawdown (5.0%), media €120
+     EXTREME: 1 drawdown (5.0%), media €129
+
+3. ANALISI MACHINE LEARNING:
+   FEATURE IMPORTANCE (regressione):
+     vix_mean: 0.601
+     duration_days: 0.399
+     news_count: 0.000
+
+   CONSIGLI BASATI SU ML:
+     Feature più importante: vix_mean (0.601)
+     → Il VIX è il fattore più predittivo dei drawdown
+     AZIONE: Implementa regole di position sizing basate su VIX
+   ACCURATEZZA CLASSIFICAZIONE: 0.667
+
+4. RACCOMANDAZIONI OPERATIVE:
+
+============================================================

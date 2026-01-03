@@ -1,0 +1,43 @@
+REPORT STRATEGIA: gold sf
+============================================================
+
+1. PERFORMANCE GENERALE:
+   Trades totali: 521
+   Win Rate: 45.5%
+   PnL Totale: €13,300
+   Equity Finale: €113,274
+   Rendimento Totale: 13.3%
+   Drawdown totali: 50
+
+2. ANALISI TOP 20 DRAWDOWN:
+   Drawdown medio (top20): €95
+   Drawdown massimo: €148
+
+   CORRELAZIONE CON VIX:
+     Coefficiente: 0.147
+     Significativo: NO
+
+   DISTRIBUZIONE PER REGIME VIX:
+     UNKNOWN: 18 drawdown (90.0%), media €94
+     LOW: 1 drawdown (5.0%), media €72
+     EXTREME: 1 drawdown (5.0%), media €136
+
+   IMPATTO NEWS:
+     Con news: 1 drawdown (5.0%), media €28
+     Senza news: 19 drawdown (95.0%), media €99
+
+3. ANALISI MACHINE LEARNING:
+   FEATURE IMPORTANCE (regressione):
+     duration_days: 0.866
+     vix_mean: 0.134
+     news_count: 0.000
+
+   CONSIGLI BASATI SU ML:
+     Feature più importante: duration_days (0.866)
+     → La durata è correlata con drawdown severi
+     AZIONE: Implementa stop loss temporali
+   ACCURATEZZA CLASSIFICAZIONE: 0.500
+
+4. RACCOMANDAZIONI OPERATIVE:
+
+============================================================

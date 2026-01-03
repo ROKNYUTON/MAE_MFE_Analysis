@@ -1,0 +1,66 @@
+================================================================================
+REPORT COMPARATIVO STRATEGIE - ANALISI DRAWDOWN CON ML
+================================================================================
+Strategie analizzate: 8
+Periodo analisi: 5907 trades totali
+
+TOP 5 STRATEGIE PER RENDIMENTO:
+----------------------------------------
+1. usdjpy cf:
+   Rendimento: 27.8%
+   Trades: 738, Win Rate: 47.6%
+   PnL Totale: €27,860
+   Drawdown totali: 84
+   Avg DD (top20): €83
+
+2. gold fv:
+   Rendimento: 25.2%
+   Trades: 701, Win Rate: 51.4%
+   PnL Totale: €25,373
+   Drawdown totali: 67
+   Avg DD (top20): €65
+
+3. dax sf:
+   Rendimento: 19.0%
+   Trades: 372, Win Rate: 34.7%
+   PnL Totale: €19,346
+   Drawdown totali: 37
+   Avg DD (top20): €154
+
+4. nas100 cf:
+   Rendimento: 17.0%
+   Trades: 617, Win Rate: 44.7%
+   PnL Totale: €17,080
+   Drawdown totali: 53
+   Avg DD (top20): €114
+
+5. nas100 sf:
+   Rendimento: 16.7%
+   Trades: 729, Win Rate: 39.6%
+   PnL Totale: €16,840
+   Drawdown totali: 62
+   Avg DD (top20): €106
+
+ANALISI CORRELAZIONE DRAWDOWN-VIX:
+----------------------------------------
+Strategie con correlazione significativa VIX-Drawdown: 2
+  • dax sf: positiva forte (r=0.85)
+  • nas100 cf: positiva moderata (r=0.45)
+
+RACCOMANDAZIONI GENERALI:
+----------------------------------------
+Strategie più resilienti (alto rendimento/basso drawdown):
+  1. us500 vf: Ratio=4.27
+  2. usdjpy pf: Ratio=0.44
+  3. gold fv: Ratio=0.39
+
+Strategie più rischiose (drawdown medi più alti):
+  1. dax sf: Avg DD €154
+  2. nas100 cf: Avg DD €114
+  3. nas100 sf: Avg DD €106
+
+CONSIGLI OPERATIVI:
+  1. Per strategie con alta correlazione VIX: implementa regole di sizing basate su VIX
+  2. Per strategie con drawdown elevati: riduci position size del 20-30%
+  3. Diversifica tra strategie con correlazioni diverse a VIX/news
+  4. Monitora performance in periodi di news economiche major

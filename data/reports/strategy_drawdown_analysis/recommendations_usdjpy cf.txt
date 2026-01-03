@@ -1,0 +1,37 @@
+REPORT STRATEGIA: usdjpy cf
+============================================================
+
+1. PERFORMANCE GENERALE:
+   Trades totali: 738
+   Win Rate: 47.6%
+   PnL Totale: €27,860
+   Equity Finale: €127,835
+   Rendimento Totale: 27.8%
+   Drawdown totali: 84
+
+2. ANALISI TOP 20 DRAWDOWN:
+   Drawdown medio (top20): €83
+   Drawdown massimo: €150
+
+   CORRELAZIONE CON VIX:
+     Coefficiente: nan
+     Significativo: NO
+
+   DISTRIBUZIONE PER REGIME VIX:
+     UNKNOWN: 20 drawdown (100.0%), media €83
+
+3. ANALISI MACHINE LEARNING:
+   FEATURE IMPORTANCE (regressione):
+     vix_mean: 0.000
+     news_count: 0.000
+     nfp_count: 0.000
+
+   CONSIGLI BASATI SU ML:
+     Feature più importante: vix_mean (0.000)
+     → Il VIX è il fattore più predittivo dei drawdown
+     AZIONE: Implementa regole di position sizing basate su VIX
+   ACCURATEZZA CLASSIFICAZIONE: 0.333
+
+4. RACCOMANDAZIONI OPERATIVE:
+
+============================================================
